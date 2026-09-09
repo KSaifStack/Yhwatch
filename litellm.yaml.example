@@ -1,0 +1,79 @@
+model_list:
+  - model_name: yhwach
+    litellm_params:
+      model: gemini/gemini-3.7-flash
+      api_key: os.environ/GEMINI_API_KEY
+      rpm: 15
+
+  - model_name: haschwalth
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+
+  - model_name: askin
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+      rpm: 30
+
+  - model_name: lille
+    litellm_params:
+      model: mistral/codestral-latest
+      api_key: os.environ/MISTRAL_API_KEY
+      rpm: 2
+
+  - model_name: gremmy
+    litellm_params:
+      model: mistral/mistral-large-latest
+      api_key: os.environ/MISTRAL_API_KEY
+      rpm: 2
+
+  - model_name: workers-ai
+    litellm_params:
+      model: cloudflare_ai_workers/@cf/openai/gpt-oss-120b
+      account_id: os.environ/CLOUDFLARE_ACCOUNT_ID
+      api_token: os.environ/CLOUDFLARE_API_TOKEN
+      rpm: 300
+
+  - model_name: nim-fallback
+    litellm_params:
+      model: nvidia_nim/meta/llama-3.3-70b-instruct
+      api_key: os.environ/NVIDIA_API_KEY
+      api_base: https://integrate.api.nvidia.com/v1
+      rpm: 40
+
+  - model_name: free-fallback
+    litellm_params:
+      model: openrouter/poolside/laguna-s-2.1:free
+      api_key: os.environ/OPENROUTER_API_KEY
+      api_base: https://openrouter.ai/api/v1
+      rpm: 20
+
+  - model_name: local
+    litellm_params:
+      model: ollama/qwen3:8b
+      api_base: http://localhost:11434
+
+litellm_settings:
+  drop_params: true
+  cooldown_time: 60
+  request_timeout: 60
+  num_retries: 2
+  fallbacks:
+    - {"yhwach": ["free-fallback", "nim-fallback", "local"]}
+    - {"haschwalth": ["free-fallback", "nim-fallback", "local"]}
+    - {"askin": ["free-fallback", "nim-fallback", "local"]}
+    - {"lille": ["free-fallback", "nim-fallback", "local"]}
+    - {"gremmy": ["free-fallback", "nim-fallback", "local"]}
+    - {"free-fallback": ["local"]}
+
+router_settings:
+  enable_pre_call_checks: true
+  optional_pre_call_checks:
+    - retriable_429
+    - retriable_5xx
+    - retriable_4xx
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
